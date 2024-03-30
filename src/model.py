@@ -2,6 +2,7 @@ import boto3
 import os
 from langchain_community.chat_models.bedrock import BedrockChat
 from dotenv import load_dotenv
+from langfuse import Langfuse
 
 load_dotenv()
 
@@ -30,8 +31,26 @@ class LLM():
 
         return claude3
     
+    def get_langfuse_handler(self, user_id="test-user"):
+        langfuse = Langfuse(
+            secret_key=os.environ["LF_SECRET_KEY"],
+            public_key=os.environ["LF_PUBLIC_KEY"],
+            host=os.environ["LF_HOST_URL"],
+        )
+
+        # Create trace with tags
+        trace = langfuse.trace(
+            user_id=user_id,
+        )
+        handler = trace.get_langchain_handler()
+
+        return handler
+    
 
 if __name__ == "__main__":
-    llm_model = LLM().get_claude_v3_model()
-    response = llm_model.invoke("Hi there")
+    llm_class = LLM()
+    llm_model = llm_class.get_claude_v3_model()
+    lf_handler = llm_class.get_langfuse_handler()
+
+    response = llm_model.invoke("Hi there", config={"callbacks": [lf_handler]})
     print(f"{response.content=}")
