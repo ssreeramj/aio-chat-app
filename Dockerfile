@@ -20,8 +20,15 @@ COPY --from=builder /app/requirements.txt .
 
 RUN pip install --no-cache ./wheels/*
 
+# Copy modified langfuse script
+COPY ./.venv/Lib/site-packages/langfuse/extract_model.py /usr/local/lib/python3.12/site-packages/langfuse/
 COPY ./src .
-COPY .env .
+
+
+EXPOSE 80
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD curl --fail http://localhost:80 || exit 1
 
 # do not change the arguments
 ENTRYPOINT ["chainlit", "run", "app.py", "--host=0.0.0.0", "--port=80", "--headless"]
