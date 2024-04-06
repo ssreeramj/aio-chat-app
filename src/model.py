@@ -1,10 +1,10 @@
 import boto3
 import os
 from langchain_community.chat_models.bedrock import BedrockChat
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from langfuse import Langfuse
 
-load_dotenv()
+load_dotenv(override=True)
 
 class LLM():
     def __init__(self):

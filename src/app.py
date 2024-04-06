@@ -28,13 +28,13 @@ async def on_chat_start():
     # Let the user know that the system is ready
     msg = cl.Message(
         content=f"Processing completed: `{text_file.name}`. Chat with your document now!",
-        disable_feedback=False,
+        disable_feedback=True,
     )
     await msg.send()
 
     inp_prompt_template = ChatPromptTemplate.from_template(
         FULL_DOCUMENT_PROMPT,
-        partial_variables={"document": text},
+        partial_variables={"document": text[:100]},
     )
 
     qa_chain = inp_prompt_template | model | StrOutputParser()
