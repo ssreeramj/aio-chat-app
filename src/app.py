@@ -18,12 +18,19 @@ async def on_chat_start():
         files = await cl.AskFileMessage(
             content="Please upload a text file to begin!",
             accept=["text/plain"],
+            max_size_mb=20,
         ).send()
 
     text_file = files[0]
 
     with open(text_file.path, "r", encoding="utf-8") as f:
         text = f.read()
+
+    # TODO Split the text
+
+    # TODO index the chunks
+
+    # TODO 
 
     # Let the user know that the system is ready
     msg = cl.Message(
