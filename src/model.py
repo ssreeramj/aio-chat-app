@@ -2,19 +2,23 @@ import boto3
 import os
 from langchain_community.chat_models.bedrock import BedrockChat
 from langchain_community.embeddings.bedrock import BedrockEmbeddings
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 from langfuse import Langfuse
+import asyncio
 
 load_dotenv(override=True)
 
-class LLM():
+
+class LLM:
     def __init__(self):
         self.boto_session = boto3.Session(
-            aws_access_key_id=os.environ.get("aws_access_key_id"), 
+            aws_access_key_id=os.environ.get("aws_access_key_id"),
             aws_secret_access_key=os.environ.get("aws_secret_access_key"),
-            aws_session_token=os.environ.get("aws_session_token")
+            aws_session_token=os.environ.get("aws_session_token"),
         )
-        self.bedrock_client = self.boto_session.client("bedrock-runtime", region_name='us-east-1')
+        self.bedrock_client = self.boto_session.client(
+            "bedrock-runtime", region_name="us-east-1"
+        )
 
     def get_claude_v3_model(self):
         claude3 = BedrockChat(
@@ -28,12 +32,11 @@ class LLM():
         )
 
         return claude3
-    
+
     def get_cohere_embedding(self):
         cohere_emb = BedrockEmbeddings(model_id="cohere.embed-english-v3")
         return cohere_emb
 
-    
     def get_langfuse_handler(self, user_id="test-user"):
         langfuse = Langfuse(
             secret_key=os.environ["LF_SECRET_KEY"],
@@ -48,7 +51,7 @@ class LLM():
         handler = trace.get_langchain_handler()
 
         return handler
-    
+
 
 if __name__ == "__main__":
     llm_class = LLM()
@@ -58,3 +61,10 @@ if __name__ == "__main__":
 
     response = llm_model.invoke("Hi there", config={"callbacks": [lf_handler]})
     print(f"{response.content=}")
+
+    emb_q = emb.aembed_query(text="Hi how are you?")
+
+    x = asyncio.run(emb_q)
+    print(x)
+
+    print(f"{emb_q=}")
