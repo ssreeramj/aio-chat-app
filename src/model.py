@@ -65,6 +65,6 @@ if __name__ == "__main__":
     emb_q = emb.aembed_query(text="Hi how are you?")
 
     x = asyncio.run(emb_q)
-    print(x)
+    # print(x)
 
     print(f"{emb_q=}")
